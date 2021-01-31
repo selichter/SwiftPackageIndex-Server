@@ -38,6 +38,10 @@ struct Manifest: Decodable, Equatable {
         var targets: [String] = []
         var type: `Type`
     }
+    struct Dependency: Decodable, Equatable {
+        var name: String
+        var url: URL
+    }
     struct Target: Decodable, Equatable {
         var name: String
     }
@@ -50,6 +54,7 @@ struct Manifest: Decodable, Equatable {
     var name: String
     var platforms: [Platform]?
     var products: [Product]
+    var dependencies: [Dependency]
     var swiftLanguageVersions: [String]?
     var targets: [Target]
     var toolsVersion: ToolsVersion?

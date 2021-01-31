@@ -87,7 +87,8 @@ enum PackageShow {
                     model.licenseListItem(),
                     model.starsListItem(),
                     model.librariesListItem(),
-                    model.executablesListItem()
+                    model.executablesListItem(),
+                    model.dependenciesListItem()
                 )
             )
         }

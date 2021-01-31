@@ -33,6 +33,10 @@ final class Package: Model, Content {
     @Field(key: "url")
     var url: String
     
+    #warning("Is this the correct way to show this?")
+    @Field(key: "dependencies")
+    var dependencies: [Dependency.Id]
+    
     // relationships
     
     @Children(for: \.$package)

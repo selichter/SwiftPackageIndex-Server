@@ -150,6 +150,7 @@ func analyze(client: Client,
                 .flatMap { updateProducts(on: tx, packageResults: $0) }
                 .flatMap { updateTargets(on: tx, packageResults: $0) }
                 .flatMap { updateLatestVersions(on: tx, packageResults: $0) }
+                .flatMap { updateDependencies(on: tx, packageResults: $0) }
                 .flatMap { onNewVersions(client: client,
                                          logger: logger,
                                          transaction: tx,
@@ -537,6 +538,30 @@ func getManifest(package: Package, version: Version) -> Result<(Version, Manifes
     }
 }
 
+func updateDependencies(on database: Database,
+                        packageResults: [Result<(Package, [(Version, Manifest)]), Error>]
+                   ) -> EventLoopFuture<[Result<(Package, [(Version, Manifest)]), Error>]> {
+    packageResults.whenAllComplete(on: database.eventLoop) { (pkg, versionsAndManifests) in
+        EventLoopFuture.andAllComplete(
+            versionsAndManifests.map { version, manifest in
+                updateDependency(on: database, version: version, manifest: manifest)
+            },
+            on: database.eventLoop
+        )
+        .transform(to: (pkg, versionsAndManifests))
+    }
+}
+
+func updateDependency(on database: Database, version: Version, manifest: Manifest) -> EventLoopFuture<Void> {
+    // Need to figure out where the dependency is linked to. the version? the product? the package?
+    // we then need to query which will generate the dependency or return an existing one - we need to make sure this
+    // gets saved.
+    let futures = manifest.dependencies.map {
+        Dependency.query(database: database, url: $0.url, name: $0.name)
+    }
+    
+    return EventLoopFuture.andAllComplete(futures, on: database.eventLoop)
+}
 
 /// Update and save a given array of `Version` (as contained in `packageResults`) with data from the associated `Manifest`.
 /// - Parameters:

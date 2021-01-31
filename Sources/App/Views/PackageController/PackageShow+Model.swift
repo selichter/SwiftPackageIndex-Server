@@ -27,6 +27,7 @@ extension PackageShow {
         var url: String
         var score: Int?
         var isArchived: Bool
+        var dependencies: [String] = ["one", "two", "three"]
         
         internal init(packageId: Package.Id,
                       repositoryOwner: String,
@@ -277,6 +278,17 @@ extension PackageShow.Model {
         return .li(
             .class("executables"),
             .text(pluralizedCount(products.executables, singular: "executable", capitalized: true))
+        )
+    }
+    
+    func dependenciesListItem() -> Node<HTML.ListContext> {
+        #warning("need to replace class once design work is done")
+        return .li(
+            .class("executables"),
+            .a(
+                .href(SiteURL.package(.value(repositoryOwner), .value(repositoryName), .dependencies).relativeURL()),
+                .text(pluralizedCount(dependencies.count, singular: "dependency", plural: "dependencies", capitalized: true))
+            )
         )
     }
 

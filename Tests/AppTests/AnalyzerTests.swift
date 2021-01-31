@@ -632,6 +632,7 @@ class AnalyzerTests: AppTestCase {
                                 platforms: [.init(platformName: .ios, version: "11.0"),
                                             .init(platformName: .macos, version: "10.10")],
                                 products: [],
+                                dependencies: [],
                                 swiftLanguageVersions: ["1", "2", "3.0.0"],
                                 targets: [],
                                 toolsVersion: .init(version: "5.0.0"))
@@ -673,6 +674,7 @@ class AnalyzerTests: AppTestCase {
                                     .init(name: "p2",
                                           targets: ["t3", "t4"],
                                           type: .executable)],
+                         dependencies: [],
                          targets: [],
                          toolsVersion: .init(version: "5.0.0"))
         try p.save(on: app.db).wait()
@@ -694,6 +696,7 @@ class AnalyzerTests: AppTestCase {
         let v = try Version(id: UUID(), package: p, packageName: "1", reference: .tag(.init(1, 0, 0)))
         let m = Manifest(name: "1",
                          products: [],
+                         dependencies: [],
                          targets: [.init(name: "t1"), .init(name: "t2")],
                          toolsVersion: .init(version: "5.0.0"))
         try p.save(on: app.db).wait()
