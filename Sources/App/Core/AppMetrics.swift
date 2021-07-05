@@ -152,7 +152,12 @@ extension AppMetrics {
     /// - Returns: future
     static func push(client: Client, logger: Logger, jobName: String) -> EventLoopFuture<Void> {
         guard let pushGatewayUrl = Current.metricsPushGatewayUrl() else {
-            return client.eventLoop.future(error: AppError.envVariableNotSet("METRICS_PUSHGATEWAY_URL"))
+            if Environment.current.isRelease {
+                // don't trigger alert for debug builds to avoid confusing error message when running via docker
+                return client.eventLoop.future(error: AppError.envVariableNotSet("METRICS_PUSHGATEWAY_URL"))
+            } else {
+                return client.eventLoop.makeSucceededVoidFuture()
+            }
         }
         let url = URI(string: "\(pushGatewayUrl)/metrics/job/\(jobName)")
 
